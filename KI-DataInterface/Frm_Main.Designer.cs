@@ -39,12 +39,18 @@ namespace KI_DataInterface
             this.rtbLog = new System.Windows.Forms.RichTextBox();
             this.btnManualCopy = new System.Windows.Forms.Button();
             this.btnViewData = new System.Windows.Forms.Button();
+            this.btnTestConnection = new System.Windows.Forms.Button();
+            this.btnSendData = new System.Windows.Forms.Button();
             this.timerDbCopy = new System.Windows.Forms.Timer(this.components);
+            this.lbl_tLocSrDb = new System.Windows.Forms.Label();
+            this.lbl_LocSrDb = new System.Windows.Forms.Label();
             this.grpSettings.SuspendLayout();
             this.SuspendLayout();
             // 
             // grpSettings
             // 
+            this.grpSettings.Controls.Add(this.lbl_LocSrDb);
+            this.grpSettings.Controls.Add(this.lbl_tLocSrDb);
             this.grpSettings.Controls.Add(this.btnSave);
             this.grpSettings.Controls.Add(this.txtPort);
             this.grpSettings.Controls.Add(this.lblPort);
@@ -64,7 +70,7 @@ namespace KI_DataInterface
             this.grpSettings.Controls.Add(this.lblCompany);
             this.grpSettings.Location = new System.Drawing.Point(12, 12);
             this.grpSettings.Name = "grpSettings";
-            this.grpSettings.Size = new System.Drawing.Size(776, 200);
+            this.grpSettings.Size = new System.Drawing.Size(776, 237);
             this.grpSettings.TabIndex = 0;
             this.grpSettings.TabStop = false;
             this.grpSettings.Text = "Settings";
@@ -209,7 +215,7 @@ namespace KI_DataInterface
             // 
             // rtbLog
             // 
-            this.rtbLog.Location = new System.Drawing.Point(12, 270);
+            this.rtbLog.Location = new System.Drawing.Point(12, 310);
             this.rtbLog.Name = "rtbLog";
             this.rtbLog.ReadOnly = true;
             this.rtbLog.Size = new System.Drawing.Size(776, 300);
@@ -218,7 +224,7 @@ namespace KI_DataInterface
             // 
             // btnManualCopy
             // 
-            this.btnManualCopy.Location = new System.Drawing.Point(12, 220);
+            this.btnManualCopy.Location = new System.Drawing.Point(12, 255);
             this.btnManualCopy.Name = "btnManualCopy";
             this.btnManualCopy.Size = new System.Drawing.Size(150, 40);
             this.btnManualCopy.TabIndex = 2;
@@ -228,7 +234,7 @@ namespace KI_DataInterface
             // 
             // btnViewData
             // 
-            this.btnViewData.Location = new System.Drawing.Point(180, 220);
+            this.btnViewData.Location = new System.Drawing.Point(180, 255);
             this.btnViewData.Name = "btnViewData";
             this.btnViewData.Size = new System.Drawing.Size(150, 40);
             this.btnViewData.TabIndex = 3;
@@ -236,17 +242,57 @@ namespace KI_DataInterface
             this.btnViewData.UseVisualStyleBackColor = true;
             this.btnViewData.Click += new System.EventHandler(this.btnViewData_Click);
             // 
+            // btnTestConnection
+            // 
+            this.btnTestConnection.Location = new System.Drawing.Point(348, 255);
+            this.btnTestConnection.Name = "btnTestConnection";
+            this.btnTestConnection.Size = new System.Drawing.Size(150, 40);
+            this.btnTestConnection.TabIndex = 4;
+            this.btnTestConnection.Text = "연결 테스트";
+            this.btnTestConnection.UseVisualStyleBackColor = true;
+            this.btnTestConnection.Click += new System.EventHandler(this.btnTestConnection_Click);
+            // 
+            // btnSendData
+            // 
+            this.btnSendData.Location = new System.Drawing.Point(516, 255);
+            this.btnSendData.Name = "btnSendData";
+            this.btnSendData.Size = new System.Drawing.Size(150, 40);
+            this.btnSendData.TabIndex = 5;
+            this.btnSendData.Text = "데이터 전송 테스트";
+            this.btnSendData.UseVisualStyleBackColor = true;
+            this.btnSendData.Click += new System.EventHandler(this.btnSendData_Click);
+            // 
             // timerDbCopy
-            //
+            // 
             this.timerDbCopy.Enabled = true;
             this.timerDbCopy.Interval = 1000;
             this.timerDbCopy.Tick += new System.EventHandler(this.timerDbCopy_Tick);
+            // 
+            // lbl_tLocSrDb
+            // 
+            this.lbl_tLocSrDb.Font = new System.Drawing.Font("굴림", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
+            this.lbl_tLocSrDb.ForeColor = System.Drawing.Color.DarkCyan;
+            this.lbl_tLocSrDb.Location = new System.Drawing.Point(6, 202);
+            this.lbl_tLocSrDb.Name = "lbl_tLocSrDb";
+            this.lbl_tLocSrDb.Size = new System.Drawing.Size(109, 21);
+            this.lbl_tLocSrDb.TabIndex = 17;
+            this.lbl_tLocSrDb.Text = "원본 DB 위치 : ";
+            // 
+            // lbl_LocSrDb
+            // 
+            this.lbl_LocSrDb.AutoSize = true;
+            this.lbl_LocSrDb.Location = new System.Drawing.Point(121, 202);
+            this.lbl_LocSrDb.Name = "lbl_LocSrDb";
+            this.lbl_LocSrDb.Size = new System.Drawing.Size(0, 15);
+            this.lbl_LocSrDb.TabIndex = 18;
             // 
             // Frm_Main
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(800, 583);
+            this.ClientSize = new System.Drawing.Size(800, 622);
+            this.Controls.Add(this.btnSendData);
+            this.Controls.Add(this.btnTestConnection);
             this.Controls.Add(this.btnViewData);
             this.Controls.Add(this.btnManualCopy);
             this.Controls.Add(this.rtbLog);
@@ -283,6 +329,10 @@ namespace KI_DataInterface
         private System.Windows.Forms.RichTextBox rtbLog;
         private System.Windows.Forms.Button btnManualCopy;
         private System.Windows.Forms.Button btnViewData;
+        private System.Windows.Forms.Button btnTestConnection;
+        private System.Windows.Forms.Button btnSendData;
         private System.Windows.Forms.Timer timerDbCopy;
+        private System.Windows.Forms.Label lbl_LocSrDb;
+        private System.Windows.Forms.Label lbl_tLocSrDb;
     }
 }

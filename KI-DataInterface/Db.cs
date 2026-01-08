@@ -11,10 +11,12 @@ namespace KI_DataInterface
         private readonly string _sourceConnStr;
         private readonly string _destConnStr;
         private readonly Logger _logger;
+        private readonly ReceiveMessage _recvMsg;
 
         public Db(string dbFolderPath, Logger logger)
         {
             _logger = logger;
+            _recvMsg = new ReceiveMessage();
             string sourceDbPath = Path.Combine(dbFolderPath, "Measurement.db");
             string destDbPath = Path.Combine(dbFolderPath, "Measurement_Test.db");
 
@@ -81,7 +83,7 @@ namespace KI_DataInterface
 
         public void CopyNewMeasurements()
         {
-            string selectQuery = "SELECT * FROM tMeasurement WHERE cNotUsed IS NULL OR cNotUsed = '' OR cNotUsed = 'False' OR cNotUsed = 0";
+            string selectQuery = "SELECT * FROM tMeasurement WHERE cNotUsed IS NULL OR cNotUsed = '' OR cNotUsed = 0";
             var recordsToCopy = new List<DataRow>();
             DataTable schemaTable = null;
 
@@ -112,6 +114,7 @@ namespace KI_DataInterface
                     foreach (var row in recordsToCopy)
                     {
                         long recordId = Convert.ToInt64(row["cKey"]);
+                        string chassisNo = row["cChassisNo"]?.ToString() ?? "N/A";
                         bool success = false;
                         try
                         {
@@ -136,16 +139,16 @@ namespace KI_DataInterface
                                 }
                                 transaction.Commit();
                                 success = true;
-                                _logger.Log($"Successfully copied record with ID: {recordId}");
+                                _logger.Log($"Successfully copied record - cKey: {recordId}, cChassisNo: {chassisNo}");
                             }
                         }
                         catch (Exception ex)
                         {
-                            _logger.Log($"[ERROR] Failed to copy record with ID: {recordId}. Reason: {ex.Message}");
+                            _logger.Log($"[ERROR] Failed to copy record - cKey: {recordId}, cChassisNo: {chassisNo}. Reason: {ex.Message}");
                             success = false;
                         }
-                        
-                        UpdateSourceRecordStatus(recordId, success);
+
+                        UpdateStatusFromServerResponse(recordId, ReceiveMessage.msg.ReceiveResult, chassisNo);
                     }
                 }
             }
@@ -155,7 +158,7 @@ namespace KI_DataInterface
             }
         }
 
-        private void UpdateSourceRecordStatus(long recordId, bool success)
+        private void UpdateSourceRecordStatus(long recordId, bool success, string chassisNo)
         {
             string updateQuery = $"UPDATE tMeasurement SET cNotUsed = @Status WHERE cKey = @cKey";
             try
@@ -170,10 +173,40 @@ namespace KI_DataInterface
                         cmd.ExecuteNonQuery();
                     }
                 }
+                _logger.Log($"Updated status to '{(success ? "True" : "False")}' - cKey: {recordId}, cChassisNo: {chassisNo}");
             }
             catch (Exception ex)
             {
-                _logger.Log($"[ERROR] Failed to update status for record ID {recordId}. Reason: {ex.Message}");
+                _logger.Log($"[ERROR] Failed to update status - cKey: {recordId}, cChassisNo: {chassisNo}. Reason: {ex.Message}");
+            }
+        }
+
+        public void UpdateStatusFromServerResponse(long recordId, string receiveResult, string chassisNo)
+        {
+            if (receiveResult == null) return;
+
+            string updateQuery = $"UPDATE tMeasurement SET cNotUsed = @Status WHERE cKey = @cKey";
+
+            // Receive_Result가 "P"면 True, "F"면 False
+            string status = receiveResult.Trim().ToUpper() == "P" ? "True" : "False";
+
+            try
+            {
+                using (var sourceConn = new SQLiteConnection(_sourceConnStr))
+                {
+                    sourceConn.Open();
+                    using (var cmd = new SQLiteCommand(updateQuery, sourceConn))
+                    {
+                        cmd.Parameters.AddWithValue("@Status", status);
+                        cmd.Parameters.AddWithValue("@cKey", recordId);
+                        cmd.ExecuteNonQuery();
+                    }
+                }
+                _logger.Log($"Server response processed - cKey: {recordId}, cChassisNo: {chassisNo}, Receive_Result: {receiveResult}, Status updated to: {status}");
+            }
+            catch (Exception ex)
+            {
+                _logger.Log($"[ERROR] Failed to update status from server response - cKey: {recordId}, cChassisNo: {chassisNo}. Reason: {ex.Message}");
             }
         }
     }

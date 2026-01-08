@@ -52,6 +52,7 @@
   <ItemGroup>
     <Compile Include="Connection.cs" />
     <Compile Include="Db.cs" />
+    <Compile Include="MeasurementData.cs" />
     <Compile Include="Frm_Main.cs">
       <SubType>Form</SubType>
     </Compile>
